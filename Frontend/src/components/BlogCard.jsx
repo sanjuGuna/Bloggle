@@ -12,7 +12,7 @@ const BlogCard = ({ title, excerpt, author, date }) => {
         Read more →
     </button>
     </div>
-  );
+);
 };
 
 export default BlogCard;
