@@ -16,7 +16,7 @@ const SearchBar = ({ onSearch }) => {
         type="text"
         value={query}
         onChange={handleChange}
-        placeholder="Search blogs..."
+        placeholder="Search"
       />
     </div>
   );
