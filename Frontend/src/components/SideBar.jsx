@@ -1,5 +1,5 @@
 import React from "react";
-
+import "../styles/SideBar.css";
 const SideBar = () => {
     const tags = ["Technology", "Lifestyle", "Travel", "Education", "Health"];
 

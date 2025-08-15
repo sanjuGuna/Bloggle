@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import SearchBar from "../components/SearchBar";
 import BlogCard from "../components/BlogCard";
 import Sidebar from "../components/SideBar";
+import "../styles/Home.css";
 
 const Home = () => {
   const [blogs] = useState([

@@ -1,5 +1,5 @@
 import React from "react";
-
+import "../styles/BlogCard.css";
 const BlogCard = ({ title, excerpt, author, date }) => {
     return (
     <div className="border p-4 rounded shadow hover:shadow-lg transition">

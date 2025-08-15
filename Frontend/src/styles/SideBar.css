@@ -1,0 +1,34 @@
+.sidebar {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.sidebar h3 {
+  margin-bottom: 10px;
+  color: #007bff;
+}
+
+.tag-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag-list li {
+  background: #f0f0f0;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.9em;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.tag-list li:hover {
+  background: #007bff;
+  color: white;
+}
