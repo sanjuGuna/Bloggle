@@ -6,7 +6,7 @@ import Sidebar from "../components/SideBar";
 import "../styles/Home.css";
 
 const Home = () => {
-  const [blogs] = useState([
+  const allBlogs = [
     {
       publication: "Starts With A Bang!",
       title: "What a nuclear reactor on the Moon really means for NASA's future",
@@ -73,11 +73,25 @@ const Home = () => {
       likes: 98,
       comments: 15
     }
-  ]);
+  ];
+
+  const [blogs, setBlogs] = useState(allBlogs);
 
   const handleSearch = (query) => {
-    console.log("Searching for:", query);
-    // later: fetch blogs from backend API
+    if (!query.trim()) {
+      setBlogs(allBlogs); // show all if search is empty
+      return;
+    }
+
+    const lowerQuery = query.toLowerCase();
+    const filtered = allBlogs.filter(blog =>
+      blog.title.toLowerCase().includes(lowerQuery) ||
+      blog.publication.toLowerCase().includes(lowerQuery) ||
+      blog.author.toLowerCase().includes(lowerQuery) ||
+      blog.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
+    );
+
+    setBlogs(filtered);
   };
 
   return (
@@ -87,20 +101,24 @@ const Home = () => {
         <div className="main-content">
           <SearchBar onSearch={handleSearch} />
           <div className="blog-list">
-            {blogs.map((blog, index) => (
-              <BlogCard 
-                key={index}
-                publication={blog.publication}
-                title={blog.title}
-                excerpt={blog.excerpt}
-                author={blog.author}
-                date={blog.date}
-                readTime={blog.readTime}
-                tags={blog.tags}
-                likes={blog.likes}
-                comments={blog.comments}
-              />
-            ))}
+            {blogs.length > 0 ? (
+              blogs.map((blog, index) => (
+                <BlogCard 
+                  key={index}
+                  publication={blog.publication}
+                  title={blog.title}
+                  excerpt={blog.excerpt}
+                  author={blog.author}
+                  date={blog.date}
+                  readTime={blog.readTime}
+                  tags={blog.tags}
+                  likes={blog.likes}
+                  comments={blog.comments}
+                />
+              ))
+            ) : (
+              <p className="no-results">No blogs found for your search.</p>
+            )}
           </div>
         </div>
         <div className="sidebar-container">
