@@ -1,43 +1,50 @@
 .blog-card {
-  background: white;
-  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 10px;
-  border: 1px solid #eee;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  padding: 1.2rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .blog-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
 }
 
 .blog-card h2 {
-  margin-top: 0;
-  color: #007bff;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
 }
 
-.meta {
-  font-size: 0.9em;
-  color: gray;
-  margin-bottom: 10px;
+.blog-card .meta {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-bottom: 0.8rem;
 }
 
-.excerpt {
-  font-size: 1em;
-  margin-bottom: 15px;
+.blog-card p {
+  font-size: 1rem;
+  color: #374151;
+  line-height: 1.5;
 }
 
-.read-more {
-  border: none;
+.blog-card button {
   background: none;
-  color: #007bff;
+  border: none;
+  color: #2563eb;
   font-weight: bold;
   cursor: pointer;
   padding: 0;
-  transition: 0.2s ease;
+  font-size: 0.95rem;
+  margin-top: 0.6rem;
+  transition: color 0.3s ease;
 }
 
-.read-more:hover {
-  color: #0056b3;
+.blog-card button:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
 }

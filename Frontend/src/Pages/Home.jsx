@@ -29,16 +29,16 @@ const Home = () => {
   return (
     <div>
       <Navbar />
-      <div className="max-w-6xl mx-auto p-4 grid grid-cols-4 gap-4">
-        <div className="col-span-3">
+      <div className="home-container">
+        <div className="main-content">
           <SearchBar onSearch={handleSearch} />
-          <div className="grid gap-4">
+          <div className="blog-list">
             {blogs.map((blog, index) => (
               <BlogCard key={index} {...blog} />
             ))}
           </div>
         </div>
-        <div>
+        <div className="sidebar-container">
           <Sidebar />
         </div>
       </div>

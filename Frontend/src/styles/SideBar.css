@@ -1,34 +1,35 @@
 .sidebar {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  border: 1px solid #eee;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  border: 1px solid #e5e7eb;
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
-.sidebar h3 {
-  margin-bottom: 10px;
-  color: #007bff;
+.sidebar-title {
+  font-weight: bold;
+  font-size: 1.125rem;
+  margin-bottom: 0.75rem;
 }
 
 .tag-list {
-  list-style: none;
-  padding: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 0.5rem;
+  padding: 0;
+  list-style: none;
 }
 
-.tag-list li {
-  background: #f0f0f0;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.9em;
+.tag-item {
+  background-color: #f3f4f6;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
   cursor: pointer;
-  transition: 0.3s ease;
+  transition: background-color 0.25s ease, transform 0.2s ease;
 }
 
-.tag-list li:hover {
-  background: #007bff;
-  color: white;
+.tag-item:hover {
+  background-color: #e5e7eb;
+  transform: translateY(-1px);
 }
