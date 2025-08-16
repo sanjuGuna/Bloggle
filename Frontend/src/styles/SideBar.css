@@ -1,35 +1,108 @@
+/* ===== SIDEBAR STYLES ===== */
 .sidebar {
-  border: 1px solid #e5e7eb;
-  padding: 1rem;
-  border-radius: 8px;
-  background-color: #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(133, 25, 60, 0.2);
+  padding: 1.5rem;
+  border-radius: 12px;
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(74, 16, 42, 0.08);
+  position: sticky;
+  top: 1.5rem;
+  transition: all 0.3s ease;
+  font-family: 'Sentic', -apple-system, sans-serif; /* Sentic as primary font */
 }
 
+.sidebar:hover {
+  box-shadow: 0 6px 16px rgba(74, 16, 42, 0.12);
+}
+
+/* ===== TYPOGRAPHY ENHANCEMENTS ===== */
 .sidebar-title {
-  font-weight: bold;
-  font-size: 1.125rem;
-  margin-bottom: 0.75rem;
+  font-weight: 600; /* Optimal weight for Sentic */
+  font-size: 1.15rem; /* Slightly reduced for better proportion */
+  margin-bottom: 1rem;
+  color: #4A102A;
+  position: relative;
+  padding-bottom: 0.5rem;
+  letter-spacing: 0.5px; /* Enhanced readability */
+  line-height: 1.4;
 }
 
+.sidebar-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 3px;
+  background: #C5172E;
+  border-radius: 3px;
+}
+
+/* ===== TAG CLOUD ===== */
 .tag-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.75rem;
   padding: 0;
   list-style: none;
 }
 
 .tag-item {
-  background-color: #f3f4f6;
-  padding: 0.25rem 0.5rem;
-  border-radius: 6px;
-  font-size: 0.875rem;
+  background-color: rgba(252, 242, 89, 0.2);
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.9rem; /* Increased for Sentic */
+  font-weight: 500;
+  color: #4A102A;
   cursor: pointer;
-  transition: background-color 0.25s ease, transform 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(133, 25, 60, 0.1);
+  letter-spacing: 0.3px; /* Improved character spacing */
 }
 
-.tag-item:hover {
-  background-color: #e5e7eb;
-  transform: translateY(-1px);
+/* ===== POPULAR POSTS ===== */
+.popular-posts li {
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(133, 25, 60, 0.05);
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  font-weight: 400; /* Regular weight for body text */
+}
+
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
+@media (max-width: 768px) {
+  .sidebar {
+    position: static;
+    margin-bottom: 2rem;
+    font-size: 0.95rem; /* Base size adjustment */
+  }
+  
+  .sidebar-title {
+    font-size: 1.05rem;
+  }
+  
+  .tag-item {
+    font-size: 0.85rem;
+  }
+}
+
+/* ===== SENTIC FONT FALLBACK ===== */
+@font-face {
+  font-family: 'Sentic';
+  src: local('Sentic'), 
+       url('/fonts/Sentic.woff2') format('woff2'),
+       url('/fonts/Sentic.woff') format('woff');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sentic';
+  src: local('Sentic Semibold'), 
+       url('/fonts/Sentic-Semibold.woff2') format('woff2'),
+       url('/fonts/Sentic-Semibold.woff') format('woff');
+  font-weight: 600;
+  font-display: swap;
 }
