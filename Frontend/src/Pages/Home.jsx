@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Navbar from "../components/Navbar";
 import SearchBar from "../components/SearchBar";
 import BlogCard from "../components/BlogCard";
 import Sidebar from "../components/SideBar";
@@ -95,8 +94,7 @@ const Home = () => {
   };
 
   return (
-    <div>
-      <Navbar />
+    <div> 
       <div className="home-container">
         <div className="main-content">
           <SearchBar onSearch={handleSearch} />
