@@ -1,6 +1,5 @@
-import React, { useState } from "react";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import React, { useState, useRef } from "react";
+import { Editor } from '@tinymce/tinymce-react';
 import "../styles/CreateBlog.css";
 
 const CreateBlog = ({ onCreate, currentUser }) => {
@@ -10,13 +9,14 @@ const CreateBlog = ({ onCreate, currentUser }) => {
     excerpt: "",
     content: "",
     tags: [],
-    status: "draft", // draft or published
-    readTime: "5 min read", // Default, can be calculated
+    status: "draft",
+    readTime: "5 min read",
     likes: 0,
     comments: 0
   });
   const [image, setImage] = useState(null);
   const [newTag, setNewTag] = useState("");
+  const editorRef = useRef(null);
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -70,6 +70,11 @@ const CreateBlog = ({ onCreate, currentUser }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    if (editorRef.current) {
+      const content = editorRef.current.getContent();
+      setBlogData(prev => ({ ...prev, content }));
+    }
     
     const newBlog = {
       ...blogData,
@@ -140,19 +145,25 @@ const CreateBlog = ({ onCreate, currentUser }) => {
 
         <div className="form-group">
           <label>Content</label>
-          <ReactQuill
-            value={blogData.content}
-            onChange={handleContentChange}
-            modules={{
-              toolbar: [
-                [{ 'header': [1, 2, false] }],
-                ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-                [{'list': 'ordered'}, {'list': 'bullet'}],
-                ['link', 'image'],
-                ['clean']
-              ]
+          <Editor
+            apiKey="your-api-key" // Get from TinyMCE dashboard
+            onInit={(evt, editor) => editorRef.current = editor}
+            initialValue={blogData.content}
+            init={{
+              height: 400,
+              menubar: true,
+              plugins: [
+                'advlist autolink lists link image charmap print preview anchor',
+                'searchreplace visualblocks code fullscreen',
+                'insertdatetime media table paste code help wordcount'
+              ],
+              toolbar: 'undo redo | formatselect | ' +
+              'bold italic backcolor | alignleft aligncenter ' +
+              'alignright alignjustify | bullist numlist outdent indent | ' +
+              'removeformat | help',
+              content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
             }}
-            theme="snow"
+            onEditorChange={handleContentChange}
           />
         </div>
 
