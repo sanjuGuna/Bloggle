@@ -1,10 +1,18 @@
 .navbar {
-  background-color: #3674B5;
-  padding: 1rem 2rem;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  /* Keep your existing styles */
+  position: sticky;
+  top: 0;
+  z-index: 1000; /* Ensure this is high enough */
+  
+  /* Add backdrop filter for modern look */
+  backdrop-filter: blur(10px);
+  background-color: rgba(54, 116, 181, 0.9); /* Semi-transparent */
+  
+  /* Remove margin if present */
+  margin: 0;
+  width: 100%;
+  border-radius: 0; /* Remove rounded corners for full-width */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .logo-link {

@@ -66,3 +66,18 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 } */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure html/body take full height */
+html, body, #root {
+  height: 100%;
+}
+
+/* Create stacking context */
+.app-container {
+  position: relative;
+  min-height: 100%;
+}

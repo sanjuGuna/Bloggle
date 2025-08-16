@@ -1,4 +1,10 @@
 /* ===== SIDEBAR STYLES ===== */
+.sidebar-container {
+  position: sticky;
+  top: 80px; /* Navbar height */
+  z-index: 100; /* Lower than navbar */
+}
+
 .sidebar {
   border: 1px solid rgba(133, 25, 60, 0.2);
   padding: 1.5rem;
