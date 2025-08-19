@@ -468,11 +468,6 @@ const CreateBlog = ({ onCreate, currentUser }) => {
               />
             </div>
 
-            {/* Helper Text for pasting images in the content writer*/}
-            <p className="editor-help">
-              💡 <strong>Pro tip:</strong> Copy and paste images directly from your clipboard (Ctrl+V) or drag & drop them into the editor
-            </p>
-
             {/* Tags Section */}
             <div className="tags-section">
               <label className="section-label">Tags</label>
