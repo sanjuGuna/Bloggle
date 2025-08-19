@@ -317,15 +317,26 @@ const CreateBlog = ({ onCreate, currentUser }) => {
           >
             {isPreview ? 'Edit' : 'Preview'}
           </button>
-          <select
-            name="status"
-            value={blogData.status}
-            onChange={handleChange}
-            className="status-select"
-          >
-            <option value="draft">Draft</option>
-            <option value="published">Publish</option>
-          </select>
+          <div className="status-toggle" role="tablist" aria-label="Story status">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={blogData.status === 'draft'}
+              className={`toggle-btn draft ${blogData.status === 'draft' ? 'active' : ''}`}
+              onClick={() => setBlogData((prev) => ({ ...prev, status: 'draft' }))}
+            >
+              Draft
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={blogData.status === 'published'}
+              className={`toggle-btn publish ${blogData.status === 'published' ? 'active' : ''}`}
+              onClick={() => setBlogData((prev) => ({ ...prev, status: 'published' }))}
+            >
+              Publish
+            </button>
+          </div>
         </div>
       </header>
 

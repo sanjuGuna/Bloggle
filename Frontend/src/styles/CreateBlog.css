@@ -71,6 +71,39 @@
   box-shadow: 0 0 0 2px rgba(26, 137, 23, 0.1);
 }
 
+/* Segmented status toggle */
+.status-toggle {
+  display: inline-flex;
+  align-items: center;
+  background: #f4f6f6;
+  border: 1px solid #e3eaea;
+  border-radius: 999px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.toggle-btn {
+  border: none;
+  background: transparent;
+  color: #475657;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggle-btn.active {
+  background: #ffffff;
+  color: #1a8917;
+  box-shadow: 0 2px 10px rgba(16, 24, 40, 0.06);
+}
+
+.toggle-btn.publish.active {
+  color: #0f7d0d;
+}
+
 /* Main Content */
 .blog-main {
   max-width: 740px;
@@ -170,13 +203,17 @@
 }
 
 .image-btn {
-  background: #1a8917;
-  color: white;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(180deg, #1a8917, #167714);
+  color: #ffffff;
   border-color: #1a8917;
+  box-shadow: 0 6px 14px rgba(26, 137, 23, 0.25);
 }
 
 .image-btn:hover {
-  background: #156d13;
+  background: linear-gradient(180deg, #188015, #146d12);
 }
 
 /* Content Editor */
@@ -917,6 +954,172 @@
   word-break: break-word;
   margin-bottom: 24px;
   transition: border-color 0.2s ease;
+}
+
+/* ========================= */
+/* Visual Refresh Overrides  */
+/* ========================= */
+
+/* Header polish */
+.blog-header {
+  border-bottom: 1px solid #eef2f7;
+  box-shadow: 0 2px 12px rgba(2, 6, 23, 0.04);
+}
+
+.header-left h1 {
+  letter-spacing: -0.02em;
+}
+
+.preview-btn {
+  border-radius: 28px;
+}
+
+.status-select {
+  border-radius: 10px;
+}
+
+/* Inputs & focus */
+.publication-input:hover,
+.excerpt-textarea:hover {
+  border-color: #d5e3d5;
+}
+
+.title-input {
+  letter-spacing: -0.01em;
+  caret-color: #1a8917;
+}
+
+/* Toolbar modern look */
+.editor-toolbar {
+  border-color: #eef2f7;
+}
+
+.toolbar-btn {
+  border-radius: 10px;
+  border-color: #e6eef0;
+  background: linear-gradient(180deg, #ffffff, #fafafa);
+}
+
+.toolbar-btn:hover {
+  box-shadow: 0 1px 2px rgba(2, 6, 23, 0.06);
+}
+
+.image-btn {
+  background: linear-gradient(180deg, #1a8917, #167714);
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+/* Content rhythm */
+.content-editor,
+.preview-content {
+  letter-spacing: 0.001em;
+}
+
+.content-editor p,
+.preview-content p {
+  margin: 0 0 22px 0;
+}
+
+.content-editor h2,
+.preview-content h2 {
+  letter-spacing: -0.015em;
+}
+
+.content-editor a,
+.preview-content a {
+  text-underline-offset: 2px;
+}
+
+/* Images */
+.content-editor .image-wrapper,
+.preview-content .image-wrapper {
+  margin: 36px auto;
+}
+
+.content-editor .blog-image,
+.preview-content img,
+.preview-content .blog-image {
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.08), 0 2px 8px rgba(2, 6, 23, 0.06);
+}
+
+.content-editor .image-caption {
+  color: #5b6b6b;
+}
+
+/* Blockquote refinement */
+.content-editor blockquote,
+.preview-content blockquote {
+  border-left: 4px solid #1a8917;
+  background: linear-gradient(90deg, rgba(26, 137, 23, 0.06), transparent 50%);
+  border-radius: 0 8px 8px 0;
+}
+
+/* Lists spacing */
+.content-editor ul,
+.preview-content ul {
+  margin: 20px 0 24px;
+}
+
+.content-editor li,
+.preview-content li {
+  margin: 10px 0;
+}
+
+/* Code blocks */
+.content-editor pre,
+.preview-content pre {
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  box-shadow: 0 6px 18px rgba(2, 6, 23, 0.12);
+}
+
+/* Tags */
+.tags-input-wrapper {
+  border-color: #e6eef0;
+}
+
+.tag-pill {
+  background: linear-gradient(180deg, #f6f7f8, #eff3f3);
+  color: #2b2f2f;
+  border: 1px solid #e6eef0;
+}
+
+.tag-remove:hover {
+  transform: rotate(90deg);
+}
+
+/* Meta and submit */
+.meta-info {
+  background: linear-gradient(180deg, #f7faf7, #f2f7f2);
+  border: 1px solid #e6f2e6;
+}
+
+.submit-button {
+  background: linear-gradient(180deg, #1a8917, #167714);
+  box-shadow: 0 10px 24px rgba(26, 137, 23, 0.28);
+}
+
+.submit-button:disabled {
+  filter: grayscale(0.2) brightness(0.96);
+  cursor: not-allowed;
+}
+
+/* Preview polish */
+.preview-title {
+  letter-spacing: -0.02em;
+}
+
+.preview-excerpt {
+  color: #516161;
+}
+
+/* Subtle enter animation for key blocks */
+.editor-container,
+.preview-container,
+.tags-section,
+.meta-info {
+  animation: fadeIn 0.35s ease;
 }
 
 .content-editor:focus {
