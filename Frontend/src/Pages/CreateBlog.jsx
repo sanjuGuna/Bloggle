@@ -15,6 +15,7 @@ const CreateBlog = ({ onCreate, currentUser }) => {
   });
   const [newTag, setNewTag] = useState("");
   const [isPreview, setIsPreview] = useState(false);
+  const [isDraggingOver, setIsDraggingOver] = useState(false);
   // Removed unused showImageUpload state
   const editorRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -88,6 +89,80 @@ const CreateBlog = ({ onCreate, currentUser }) => {
       handleContentChange();
     };
     reader.readAsDataURL(file);
+  };
+
+  // Try to set caret where the user drops
+  const setCaretFromPoint = (clientX, clientY) => {
+    const selection = window.getSelection();
+    if (!selection) return;
+    if (document.caretRangeFromPoint) {
+      const range = document.caretRangeFromPoint(clientX, clientY);
+      if (range) {
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+    } else if (document.caretPositionFromPoint) {
+      const pos = document.caretPositionFromPoint(clientX, clientY);
+      if (pos) {
+        const range = document.createRange();
+        range.setStart(pos.offsetNode, pos.offset);
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+    }
+  };
+
+  // Drag & Drop handlers for images
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDraggingOver(true);
+  };
+
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    setIsDraggingOver(true);
+  };
+
+  const handleDragLeave = (e) => {
+    // Best-effort: if leaving the editor area, remove highlight
+    if (!editorRef.current || !editorRef.current.contains(e.relatedTarget)) {
+      setIsDraggingOver(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingOver(false);
+
+    // Place caret where dropped
+    setCaretFromPoint(e.clientX, e.clientY);
+
+    const dt = e.dataTransfer;
+    if (!dt) return;
+
+    // Prefer files
+    if (dt.files && dt.files.length > 0) {
+      Array.from(dt.files).forEach((file) => {
+        if (file.type && file.type.startsWith('image/')) {
+          insertImageFromFile(file);
+        }
+      });
+      return;
+    }
+
+    // Fallback: handle dragged image from browser (no file), try items
+    if (dt.items && dt.items.length > 0) {
+      Array.from(dt.items).forEach((item) => {
+        if (item.kind === 'file') {
+          const file = item.getAsFile();
+          if (file && file.type && file.type.startsWith('image/')) {
+            insertImageFromFile(file);
+          }
+        }
+      });
+    }
   };
 
   // Handle file input
@@ -357,9 +432,14 @@ const CreateBlog = ({ onCreate, currentUser }) => {
                 contentEditable
                 onInput={handleContentChange}
                 onPaste={handlePaste}
-                className="content-editor"
+                onDragOver={handleDragOver}
+                onDragEnter={handleDragEnter}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`content-editor ${isDraggingOver ? 'dragging-over' : ''}`}
                 data-placeholder="Tell your story..."
                 suppressContentEditableWarning={true}
+                style={{ outline: 'none' }}
               />
               <input
                 type="file"
