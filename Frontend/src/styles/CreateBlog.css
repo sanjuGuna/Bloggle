@@ -1151,3 +1151,74 @@
   outline: none;
 }
 }
+/* Add these styles to your existing CreateBlog.css file */
+.image-upload-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #09802d, #1bff67);
+  box-shadow: 0 2px 8px rgba(102, 255, 52, 0.3);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.image-upload-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: all 0.6s ease;
+}
+
+.image-upload-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4);
+}
+
+.image-upload-btn:hover::before {
+  left: 100%;
+}
+
+.image-upload-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(46, 204, 113, 0.3);
+}
+
+.btn-icon {
+  display: flex;
+  align-items: center;
+}
+
+.btn-icon svg {
+  width: 18px;
+  height: 18px;
+  stroke: white;
+}
+
+.btn-text {
+  letter-spacing: 0.5px;
+}
+
+/* Animation for when image is uploaded */
+@keyframes success-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(46, 204, 113, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+}
+
+.image-upload-btn.uploaded {
+  background: linear-gradient(135deg, #27ae60, #219653);
+  animation: success-pulse 1s;
+}
