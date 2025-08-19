@@ -16,6 +16,7 @@ const CreateBlog = ({ onCreate, currentUser }) => {
   const [newTag, setNewTag] = useState("");
   const [isPreview, setIsPreview] = useState(false);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
   // Removed unused showImageUpload state
   const editorRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -46,6 +47,12 @@ const CreateBlog = ({ onCreate, currentUser }) => {
   const insertImageFromFile = (file) => {
     if (!file || !editorRef.current) return;
 
+    // Block inserting images into the title
+    if (document.activeElement === titleRef.current) {
+      alert('Images cannot be added to the title. Please add images within the story body.');
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (e) => {
       // Create image container
@@ -66,20 +73,34 @@ const CreateBlog = ({ onCreate, currentUser }) => {
       imageWrapper.appendChild(img);
       imageWrapper.appendChild(captionDiv);
 
-      // Insert at current cursor position or at the end
+      // Insert at current cursor position only if selection is inside editor; otherwise, block if title focused or append at end
       const selection = window.getSelection();
-      if (selection.rangeCount > 0) {
+      const isSelectionInsideEditor = () => {
+        if (!selection || selection.rangeCount === 0) return false;
+        const range = selection.getRangeAt(0);
+        const container = range.commonAncestorContainer;
+        return editorRef.current && editorRef.current.contains(container);
+      };
+
+      if (isSelectionInsideEditor()) {
         const range = selection.getRangeAt(0);
         range.deleteContents();
         range.insertNode(imageWrapper);
-        
         // Move cursor after the image
         range.setStartAfter(imageWrapper);
         range.collapse(true);
         selection.removeAllRanges();
         selection.addRange(range);
       } else {
+        // If not inside editor, append at the end of the editor
         editorRef.current.appendChild(imageWrapper);
+        // Place caret after image
+        const range = document.createRange();
+        range.setStartAfter(imageWrapper);
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        editorRef.current.focus();
       }
 
       // Add some spacing after image
@@ -162,6 +183,79 @@ const CreateBlog = ({ onCreate, currentUser }) => {
           }
         }
       });
+    }
+  };
+
+  // Image selection and deletion
+  const clearSelectedImage = () => {
+    if (selectedImage) {
+      const wrapper = selectedImage.closest('.image-wrapper');
+      if (wrapper) wrapper.classList.remove('selected');
+    }
+    setSelectedImage(null);
+  };
+
+  const handleEditorClick = (e) => {
+    const target = e.target;
+    if (target && target.classList && target.classList.contains('blog-image')) {
+      if (selectedImage && selectedImage !== target) {
+        const prevWrapper = selectedImage.closest('.image-wrapper');
+        if (prevWrapper) prevWrapper.classList.remove('selected');
+      }
+      const wrapper = target.closest('.image-wrapper');
+      if (wrapper) wrapper.classList.add('selected');
+      setSelectedImage(target);
+    } else {
+      clearSelectedImage();
+    }
+  };
+
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (!selectedImage) return;
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        e.preventDefault();
+        const wrapper = selectedImage.closest('.image-wrapper');
+        if (wrapper && editorRef.current && editorRef.current.contains(wrapper)) {
+          wrapper.remove();
+          setSelectedImage(null);
+          handleContentChange();
+        }
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [selectedImage]);
+
+  const setImageSize = (size) => {
+    if (!selectedImage) return;
+    selectedImage.classList.remove('img-size-s', 'img-size-m', 'img-size-l', 'img-size-full');
+    switch (size) {
+      case 's':
+        selectedImage.classList.add('img-size-s');
+        break;
+      case 'm':
+        selectedImage.classList.add('img-size-m');
+        break;
+      case 'l':
+        selectedImage.classList.add('img-size-l');
+        break;
+      case 'full':
+        selectedImage.classList.add('img-size-full');
+        break;
+      default:
+        break;
+    }
+    handleContentChange();
+  };
+
+  const handleDeleteSelectedImage = () => {
+    if (!selectedImage) return;
+    const wrapper = selectedImage.closest('.image-wrapper');
+    if (wrapper) {
+      wrapper.remove();
+      setSelectedImage(null);
+      handleContentChange();
     }
   };
 
@@ -369,7 +463,8 @@ const CreateBlog = ({ onCreate, currentUser }) => {
               }}
             />
 
-            {/* Editor Toolbar */}
+            {/* Editor Toolbar */
+            }
             <div className="editor-toolbar">
               <div className="toolbar-group">
                 <button
@@ -443,6 +538,20 @@ const CreateBlog = ({ onCreate, currentUser }) => {
               </div>
             </div>
 
+            {selectedImage && (
+              <div className="image-controls" role="toolbar" aria-label="Image controls">
+                <span className="controls-label">Image size:</span>
+                <div className="controls-group">
+                  <button type="button" className="size-btn" onClick={() => setImageSize('s')}>S</button>
+                  <button type="button" className="size-btn" onClick={() => setImageSize('m')}>M</button>
+                  <button type="button" className="size-btn" onClick={() => setImageSize('l')}>L</button>
+                  <button type="button" className="size-btn" onClick={() => setImageSize('full')}>Full</button>
+                </div>
+                <div className="controls-sep" />
+                <button type="button" className="delete-image-btn" onClick={handleDeleteSelectedImage}>Delete</button>
+              </div>
+            )}
+
             {/* Content Editor */}
             <div className="editor-wrapper">
               <div
@@ -454,6 +563,7 @@ const CreateBlog = ({ onCreate, currentUser }) => {
                 onDragEnter={handleDragEnter}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
+                onClick={handleEditorClick}
                 className={`content-editor ${isDraggingOver ? 'dragging-over' : ''}`}
                 data-placeholder="Tell your story..."
                 suppressContentEditableWarning={true}
