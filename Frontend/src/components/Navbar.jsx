@@ -33,6 +33,14 @@ return (
             Login
         </NavLink>
         </li>
+        <li>
+            <NavLink 
+                to="/profile"
+                className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+            >
+                Profile
+            </NavLink>
+        </li>
     </ul>
     </nav>
 );
