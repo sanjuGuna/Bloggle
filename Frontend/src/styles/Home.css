@@ -29,11 +29,11 @@
   /* ===== SEARCH BAR ===== */
   .search-bar-container {
     position: sticky;
-    top: 4rem; /* Increase top value to stay below navbar */
+    top: 5rem; /* Adjust top value since navbar now starts from top */
     z-index: 100;
     background: white;
     padding: 1rem 0;
-    margin-bottom: 1rem;
+    margin-bottom: 0rem;
   }
 
   .blog-list {

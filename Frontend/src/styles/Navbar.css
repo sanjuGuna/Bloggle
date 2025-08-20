@@ -102,10 +102,10 @@
 
   /* Rounded + Floating look */
   border-radius: 50px;
-  margin: 10px auto;
+  margin: 0 auto 10px auto; /* Remove top margin, keep bottom margin */
   width: 95%;
   position: sticky;
-  top: 10px;
+  top: 0; /* Change from 10px to 0 */
   z-index: 1000;
 }
 
