@@ -97,7 +97,9 @@ const Home = () => {
     <div> 
       <div className="home-container">
         <div className="main-content">
-          <SearchBar onSearch={handleSearch} />
+          <div className="search-bar-container">
+            <SearchBar onSearch={handleSearch} />
+          </div>
           <div className="blog-list">
             {blogs.length > 0 ? (
               blogs.map((blog, index) => (
