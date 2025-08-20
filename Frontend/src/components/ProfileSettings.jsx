@@ -46,8 +46,8 @@ const ProfileSettings = ({ currentUser, onUpdateUser }) => {
   return (
     <div className="profile-settings-container">
       <div className="profile-header">
-        <h1>Profile & Settings</h1>
-        <p>Manage your account settings and preferences</p>
+        <h1>Profile Settings</h1>
+        <p>Manage your account preferences and personal information</p>
       </div>
 
       <div className="profile-content">
@@ -60,7 +60,7 @@ const ProfileSettings = ({ currentUser, onUpdateUser }) => {
                 className="avatar"
               />
               <label htmlFor="avatar-upload" className="avatar-upload-label">
-                <span>Change Photo</span>
+                <span className="upload-icon">📷</span>
               </label>
               <input
                 id="avatar-upload"
@@ -71,7 +71,8 @@ const ProfileSettings = ({ currentUser, onUpdateUser }) => {
               />
             </div>
             <h2>{userData.username}</h2>
-            <p>{userData.bio || 'No bio yet'}</p>
+            <p className="user-email">{userData.email}</p>
+            <p className="user-bio">{userData.bio || 'No bio yet'}</p>
           </div>
 
           <nav className="settings-nav">
@@ -79,25 +80,29 @@ const ProfileSettings = ({ currentUser, onUpdateUser }) => {
               className={`nav-item ${activeTab === 'profile' ? 'active' : ''}`}
               onClick={() => setActiveTab('profile')}
             >
-              <span>👤</span> Profile
+              <span className="nav-icon">👤</span>
+              <span className="nav-text">Profile</span>
             </button>
             <button 
               className={`nav-item ${activeTab === 'account' ? 'active' : ''}`}
               onClick={() => setActiveTab('account')}
             >
-              <span>⚙️</span> Account Settings
+              <span className="nav-icon">⚙️</span>
+              <span className="nav-text">Account</span>
             </button>
             <button 
               className={`nav-item ${activeTab === 'notifications' ? 'active' : ''}`}
               onClick={() => setActiveTab('notifications')}
             >
-              <span>🔔</span> Notifications
+              <span className="nav-icon">🔔</span>
+              <span className="nav-text">Notifications</span>
             </button>
             <button 
               className={`nav-item ${activeTab === 'privacy' ? 'active' : ''}`}
               onClick={() => setActiveTab('privacy')}
             >
-              <span>🔒</span> Privacy
+              <span className="nav-icon">🔒</span>
+              <span className="nav-text">Privacy</span>
             </button>
           </nav>
         </div>
@@ -105,28 +110,61 @@ const ProfileSettings = ({ currentUser, onUpdateUser }) => {
         <div className="main-content">
           {activeTab === 'profile' && (
             <div className="tab-content">
-              <h2>Profile Information</h2>
-              <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                  <label htmlFor="username">Username</label>
-                  <input
-                    type="text"
-                    id="username"
-                    name="username"
-                    value={userData.username}
-                    onChange={handleInputChange}
-                  />
-                </div>
+              <div className="tab-header">
+                <h2>Personal Information</h2>
+                <p>Update your personal details and how others see you</p>
+              </div>
+              <form onSubmit={handleSubmit} className="settings-form">
+                <div className="form-grid">
+                  <div className="form-group">
+                    <label htmlFor="username">Username</label>
+                    <input
+                      type="text"
+                      id="username"
+                      name="username"
+                      value={userData.username}
+                      onChange={handleInputChange}
+                      className="modern-input"
+                    />
+                  </div>
 
-                <div className="form-group">
-                  <label htmlFor="email">Email Address</label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={userData.email}
-                    onChange={handleInputChange}
-                  />
+                  <div className="form-group">
+                    <label htmlFor="email">Email Address</label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={userData.email}
+                      onChange={handleInputChange}
+                      className="modern-input"
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="location">Location</label>
+                    <input
+                      type="text"
+                      id="location"
+                      name="location"
+                      value={userData.location}
+                      onChange={handleInputChange}
+                      placeholder="Where are you based?"
+                      className="modern-input"
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="website">Website</label>
+                    <input
+                      type="url"
+                      id="website"
+                      name="website"
+                      value={userData.website}
+                      onChange={handleInputChange}
+                      placeholder="https://example.com"
+                      className="modern-input"
+                    />
+                  </div>
                 </div>
 
                 <div className="form-group">
@@ -138,58 +176,48 @@ const ProfileSettings = ({ currentUser, onUpdateUser }) => {
                     onChange={handleInputChange}
                     rows="4"
                     placeholder="Tell us about yourself..."
+                    className="modern-textarea"
                   />
+                  <div className="char-count">{userData.bio.length}/200</div>
                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="location">Location</label>
-                  <input
-                    type="text"
-                    id="location"
-                    name="location"
-                    value={userData.location}
-                    onChange={handleInputChange}
-                    placeholder="Where are you based?"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="website">Website</label>
-                  <input
-                    type="url"
-                    id="website"
-                    name="website"
-                    value={userData.website}
-                    onChange={handleInputChange}
-                    placeholder="https://example.com"
-                  />
-                </div>
-
-                <button type="submit" className="save-btn">Save Changes</button>
+                <button type="submit" className="modern-btn primary">Save Changes</button>
               </form>
             </div>
           )}
 
           {activeTab === 'account' && (
             <div className="tab-content">
-              <h2>Account Settings</h2>
+              <div className="tab-header">
+                <h2>Account Settings</h2>
+                <p>Manage your account security and data</p>
+              </div>
               <div className="account-actions">
                 <div className="action-card">
-                  <h3>Change Password</h3>
-                  <p>Update your password regularly to keep your account secure</p>
-                  <button className="action-btn">Change Password</button>
+                  <div className="action-icon">🔑</div>
+                  <div className="action-content">
+                    <h3>Change Password</h3>
+                    <p>Update your password regularly to keep your account secure</p>
+                  </div>
+                  <button className="modern-btn outline">Update</button>
                 </div>
 
                 <div className="action-card">
-                  <h3>Export Data</h3>
-                  <p>Download a copy of your personal data</p>
-                  <button className="action-btn">Export Data</button>
+                  <div className="action-icon">📥</div>
+                  <div className="action-content">
+                    <h3>Export Data</h3>
+                    <p>Download a copy of your personal data</p>
+                  </div>
+                  <button className="modern-btn outline">Export</button>
                 </div>
 
                 <div className="action-card danger">
-                  <h3>Delete Account</h3>
-                  <p>Permanently delete your account and all associated data</p>
-                  <button className="action-btn danger">Delete Account</button>
+                  <div className="action-icon">🗑️</div>
+                  <div className="action-content">
+                    <h3>Delete Account</h3>
+                    <p>Permanently delete your account and all associated data</p>
+                  </div>
+                  <button className="modern-btn danger">Delete</button>
                 </div>
               </div>
             </div>
@@ -197,71 +225,124 @@ const ProfileSettings = ({ currentUser, onUpdateUser }) => {
 
           {activeTab === 'notifications' && (
             <div className="tab-content">
-              <h2>Notification Preferences</h2>
-              <form onSubmit={handleSubmit}>
-                <div className="checkbox-group">
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      name="notifications"
-                      checked={userData.notifications}
-                      onChange={handleInputChange}
-                    />
-                    <span className="checkmark"></span>
-                    Enable email notifications
-                  </label>
+              <div className="tab-header">
+                <h2>Notification Preferences</h2>
+                <p>Control how we communicate with you</p>
+              </div>
+              <form onSubmit={handleSubmit} className="settings-form">
+                <div className="toggle-group">
+                  <div className="toggle-item">
+                    <div className="toggle-content">
+                      <h4>Email Notifications</h4>
+                      <p>Receive important updates about your account</p>
+                    </div>
+                    <label className="modern-toggle">
+                      <input
+                        type="checkbox"
+                        name="notifications"
+                        checked={userData.notifications}
+                        onChange={handleInputChange}
+                      />
+                      <span className="toggle-slider"></span>
+                    </label>
+                  </div>
+
+                  <div className="toggle-item">
+                    <div className="toggle-content">
+                      <h4>Newsletter</h4>
+                      <p>Get the latest news and updates from our platform</p>
+                    </div>
+                    <label className="modern-toggle">
+                      <input
+                        type="checkbox"
+                        name="newsletter"
+                        checked={userData.newsletter}
+                        onChange={handleInputChange}
+                      />
+                      <span className="toggle-slider"></span>
+                    </label>
+                  </div>
                 </div>
 
-                <div className="checkbox-group">
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      name="newsletter"
-                      checked={userData.newsletter}
-                      onChange={handleInputChange}
-                    />
-                    <span className="checkmark"></span>
-                    Subscribe to newsletter
-                  </label>
-                </div>
-
-                <button type="submit" className="save-btn">Save Preferences</button>
+                <button type="submit" className="modern-btn primary">Save Preferences</button>
               </form>
             </div>
           )}
 
           {activeTab === 'privacy' && (
             <div className="tab-content">
-              <h2>Privacy Settings</h2>
-              <form onSubmit={handleSubmit}>
+              <div className="tab-header">
+                <h2>Privacy Settings</h2>
+                <p>Control your privacy and visibility settings</p>
+              </div>
+              <form onSubmit={handleSubmit} className="settings-form">
                 <div className="form-group">
                   <label htmlFor="privacy">Profile Visibility</label>
-                  <select
-                    id="privacy"
-                    name="privacy"
-                    value={userData.privacy}
-                    onChange={handleInputChange}
-                  >
-                    <option value="public">Public</option>
-                    <option value="private">Private</option>
-                    <option value="followers">Followers Only</option>
-                  </select>
+                  <div className="radio-group">
+                    <label className="radio-option">
+                      <input
+                        type="radio"
+                        name="privacy"
+                        value="public"
+                        checked={userData.privacy === 'public'}
+                        onChange={handleInputChange}
+                      />
+                      <span className="radio-custom"></span>
+                      <div className="radio-content">
+                        <span className="radio-label">Public</span>
+                        <span className="radio-description">Anyone can see your profile</span>
+                      </div>
+                    </label>
+                    
+                    <label className="radio-option">
+                      <input
+                        type="radio"
+                        name="privacy"
+                        value="private"
+                        checked={userData.privacy === 'private'}
+                        onChange={handleInputChange}
+                      />
+                      <span className="radio-custom"></span>
+                      <div className="radio-content">
+                        <span className="radio-label">Private</span>
+                        <span className="radio-description">Only you can see your profile</span>
+                      </div>
+                    </label>
+                    
+                    <label className="radio-option">
+                      <input
+                        type="radio"
+                        name="privacy"
+                        value="followers"
+                        checked={userData.privacy === 'followers'}
+                        onChange={handleInputChange}
+                      />
+                      <span className="radio-custom"></span>
+                      <div className="radio-content">
+                        <span className="radio-label">Followers Only</span>
+                        <span className="radio-description">Only your followers can see your profile</span>
+                      </div>
+                    </label>
+                  </div>
                 </div>
 
-                <div className="checkbox-group">
-                  <label className="checkbox-label">
+                <div className="toggle-item">
+                  <div className="toggle-content">
+                    <h4>Show Email Address</h4>
+                    <p>Display your email address on your public profile</p>
+                  </div>
+                  <label className="modern-toggle">
                     <input
                       type="checkbox"
                       name="showEmail"
                       checked={userData.showEmail}
                       onChange={handleInputChange}
                     />
-                    <span className="checkmark"></span>
-                    Show email on profile
+                    <span className="toggle-slider"></span>
                   </label>
                 </div>
 
-                <button type="submit" className="save-btn">Save Privacy Settings</button>
+                <button type="submit" className="modern-btn primary">Save Privacy Settings</button>
               </form>
             </div>
           )}
