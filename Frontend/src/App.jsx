@@ -1,8 +1,35 @@
-import React from "react";
+import React, { useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
 import Home from "./pages/Home";
+import Layout from "./components/Layout";
+import BlogDetails from "./pages/BlogDetails";
+import CreateBlogWrapper from "./components/CreateBlogWrapper";
+import ProfileSettingsWrapper from "./components/ProfileSettingsWrapper";
+import Login from "./components/Login";
+import "./App.css";
 
 function App() {
-  return <Home />;
+  const [showLogin, setShowLogin] = useState(false);
+
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <Layout onShowLogin={() => setShowLogin(true)}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/blog/:id" element={<BlogDetails />} />
+            <Route path="/create" element={<CreateBlogWrapper />} />
+            <Route path="/profile" element={<ProfileSettingsWrapper />} />
+          </Routes>
+        </Layout>
+        
+        {showLogin && (
+          <Login onClose={() => setShowLogin(false)} />
+        )}
+      </BrowserRouter>
+    </AuthProvider>
+  );
 }
 
 export default App;

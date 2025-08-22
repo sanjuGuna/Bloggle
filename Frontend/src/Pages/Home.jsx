@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import SearchBar from "../components/SearchBar";
 import BlogCard from "../components/BlogCard";
-import Sidebar from "../components/SideBar";
+import SideBar from "../components/SideBar";
 import "../styles/Home.css";
 
 const Home = () => {
@@ -122,7 +122,7 @@ const Home = () => {
           </div>
         </div>
         <div className="sidebar-container">
-          <Sidebar />
+          <SideBar />
         </div>
       </div>
     </div>
