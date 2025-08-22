@@ -121,6 +121,7 @@ blogSchema.virtual('commentCount').get(function() {
 
 // Virtual for reading time calculation
 blogSchema.virtual('calculatedReadTime').get(function() {
+  if (!this.content) return '5 min read';
   const wordCount = this.content.split(/\s+/).length;
   const wordsPerMinute = 200;
   const minutes = Math.ceil(wordCount / wordsPerMinute);

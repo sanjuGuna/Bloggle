@@ -17,10 +17,13 @@ const Home = () => {
       try {
         setLoading(true);
         setError(null);
-        const blogsData = await api.get('/api/blogs', {
+        const response = await api.get('/api/blogs', {
           timeout: 10000,
           retries: 2
         });
+        
+        // Backend returns { blogs, pagination }, so extract the blogs array
+        const blogsData = response.blogs || [];
         setAllBlogs(blogsData);
         setBlogs(blogsData);
       } catch (err) {

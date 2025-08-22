@@ -22,8 +22,13 @@ router.get('/', async (req, res) => {
     // Build query
     let query = { status: 'published' };
     
-    if (search) {
-      query.$text = { $search: search };
+    if (search && search.trim()) {
+      // Use regex search instead of text search to avoid index issues
+      query.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { excerpt: { $regex: search, $options: 'i' } },
+        { content: { $regex: search, $options: 'i' } }
+      ];
     }
     
     if (category) {
