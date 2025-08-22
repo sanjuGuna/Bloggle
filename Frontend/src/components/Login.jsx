@@ -100,6 +100,7 @@ const Login = ({ onClose }) => {
 
         {error && (
           <div className="error-message">
+            <span className="error-icon">⚠️</span>
             {error}
           </div>
         )}

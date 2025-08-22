@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { api } from '../utils/api';
 
 const AuthContext = createContext();
 
@@ -8,6 +9,26 @@ export const useAuth = () => {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
+};
+
+// Enhanced error handling utility
+const handleAuthError = (error) => {
+  if (error.message?.includes('timed out')) {
+    return 'Connection timeout. Please check your internet connection and try again.';
+  }
+  if (error.message?.includes('Failed to fetch') || error.message?.includes('Network error')) {
+    return 'Unable to connect to server. Please check your internet connection.';
+  }
+  if (error.status === 401) {
+    return 'Invalid credentials. Please check your email and password.';
+  }
+  if (error.status === 429) {
+    return 'Too many login attempts. Please wait a moment and try again.';
+  }
+  if (error.status >= 500) {
+    return 'Server error. Please try again later.';
+  }
+  return error.message || 'An unexpected error occurred. Please try again.';
 };
 
 export const AuthProvider = ({ children }) => {
@@ -20,24 +41,19 @@ export const AuthProvider = ({ children }) => {
     const checkAuth = async () => {
       if (token) {
         try {
-          const response = await fetch('http://localhost:5000/api/auth/me', {
-            headers: {
-              'x-auth-token': token
-            }
+          const userData = await api.get('/api/auth/me', {
+            token,
+            timeout: 8000, // 8 second timeout for auth check
+            retries: 2
           });
-          
-          if (response.ok) {
-            const userData = await response.json();
-            setUser(userData);
-          } else {
-            // Token is invalid, remove it
+          setUser(userData);
+        } catch (error) {
+          console.error('Auth check failed:', error);
+          // Only remove token if it's actually invalid (401), not on network errors
+          if (error.status === 401) {
             localStorage.removeItem('token');
             setToken(null);
           }
-        } catch (error) {
-          console.error('Auth check failed:', error);
-          localStorage.removeItem('token');
-          setToken(null);
         }
       }
       setLoading(false);
@@ -46,57 +62,47 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, [token]);
 
-  // Login function
+  // Login function with enhanced error handling
   const login = async (email, password) => {
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email, password })
-      });
+      const data = await api.post('/api/auth/login',
+        { email, password },
+        {
+          timeout: 10000, // 10 second timeout
+          retries: 2 // Retry twice on network errors
+        }
+      );
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setUser(data.user);
-        setToken(data.token);
-        localStorage.setItem('token', data.token);
-        return { success: true, user: data.user };
-      } else {
-        return { success: false, message: data.message };
-      }
+      setUser(data.user);
+      setToken(data.token);
+      localStorage.setItem('token', data.token);
+      return { success: true, user: data.user };
     } catch (error) {
       console.error('Login error:', error);
-      return { success: false, message: 'Network error occurred' };
+      const errorMessage = handleAuthError(error);
+      return { success: false, message: errorMessage };
     }
   };
 
-  // Register function
+  // Register function with enhanced error handling
   const register = async (username, email, password) => {
     try {
-      const response = await fetch('http://localhost:5000/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username, email, password })
-      });
+      const data = await api.post('/api/auth/register',
+        { username, email, password },
+        {
+          timeout: 10000, // 10 second timeout
+          retries: 2 // Retry twice on network errors
+        }
+      );
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setUser(data.user);
-        setToken(data.token);
-        localStorage.setItem('token', data.token);
-        return { success: true, user: data.user };
-      } else {
-        return { success: false, message: data.message };
-      }
+      setUser(data.user);
+      setToken(data.token);
+      localStorage.setItem('token', data.token);
+      return { success: true, user: data.user };
     } catch (error) {
       console.error('Registration error:', error);
-      return { success: false, message: 'Network error occurred' };
+      const errorMessage = handleAuthError(error);
+      return { success: false, message: errorMessage };
     }
   };
 
@@ -107,29 +113,24 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
   };
 
-  // Update user profile
+  // Update user profile with enhanced error handling
   const updateProfile = async (profileData) => {
     try {
-      const response = await fetch('http://localhost:5000/api/users/profile', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-auth-token': token
-        },
-        body: JSON.stringify(profileData)
-      });
+      const updatedUser = await api.put('/api/users/profile',
+        profileData,
+        {
+          token,
+          timeout: 10000, // 10 second timeout
+          retries: 2 // Retry twice on network errors
+        }
+      );
 
-      if (response.ok) {
-        const updatedUser = await response.json();
-        setUser(updatedUser);
-        return { success: true, user: updatedUser };
-      } else {
-        const error = await response.json();
-        return { success: false, message: error.message };
-      }
+      setUser(updatedUser);
+      return { success: true, user: updatedUser };
     } catch (error) {
       console.error('Profile update error:', error);
-      return { success: false, message: 'Network error occurred' };
+      const errorMessage = handleAuthError(error);
+      return { success: false, message: errorMessage };
     }
   };
 

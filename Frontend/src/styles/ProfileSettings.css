@@ -94,11 +94,27 @@
     transform: scale(1.1);
     box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
   }
-  
+
+  .avatar-upload-label.uploading {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    cursor: not-allowed;
+    animation: pulse 2s infinite;
+  }
+
+  .avatar-upload-label.uploading:hover {
+    transform: none;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
   .upload-icon {
     font-size: 0.9rem;
   }
-  
+
   .avatar-upload-input {
     display: none;
   }

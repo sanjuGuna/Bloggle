@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import '../styles/CreateBlog.css';
 
-const CreateBlog = ({ onCreate, currentUser }) => {
+const CreateBlog = ({ onCreate, currentUser, isSubmitting = false }) => {
   const [blogData, setBlogData] = useState({
     publication: "",
     title: "",
@@ -649,8 +649,12 @@ const CreateBlog = ({ onCreate, currentUser }) => {
               type="button"
               onClick={handleSubmit}
               className="submit-button"
+              disabled={isSubmitting}
             >
-              {blogData.status === "draft" ? "Save Draft" : "Publish Story"}
+              {isSubmitting
+                ? (blogData.status === "draft" ? "Saving..." : "Publishing...")
+                : (blogData.status === "draft" ? "Save Draft" : "Publish Story")
+              }
             </button>
           </div>
         ) : (

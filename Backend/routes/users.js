@@ -1,8 +1,45 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const User = require('../models/User');
 const Blog = require('../models/Blog');
 const auth = require('../middleware/auth');
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = 'uploads/avatars';
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    // Generate unique filename
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, 'avatar-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  // Check if file is an image
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Only image files are allowed!'), false);
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  }
+});
 
 const router = express.Router();
 
@@ -82,7 +119,7 @@ router.put('/profile', [
 });
 
 // @route   PUT /api/users/avatar
-// @desc    Update user avatar
+// @desc    Update user avatar with URL
 // @access  Private
 router.put('/avatar', [
   auth,
@@ -96,17 +133,67 @@ router.put('/avatar', [
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    
+
     const { avatar } = req.body;
-    
+
     const user = await User.findById(req.user.id);
     user.avatar = avatar;
     await user.save();
-    
+
     res.json({ avatar: user.avatar });
   } catch (error) {
     console.error('Update avatar error:', error.message);
     res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   POST /api/users/avatar/upload
+// @desc    Upload user avatar file
+// @access  Private
+router.post('/avatar/upload', auth, upload.single('avatar'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    // Generate the avatar URL
+    const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+
+    // Update user's avatar in database
+    const user = await User.findById(req.user.id);
+
+    // Delete old avatar file if it exists and is not a default avatar
+    if (user.avatar && user.avatar.startsWith('/uploads/avatars/')) {
+      const oldAvatarPath = path.join(__dirname, '..', user.avatar);
+      if (fs.existsSync(oldAvatarPath)) {
+        fs.unlinkSync(oldAvatarPath);
+      }
+    }
+
+    user.avatar = avatarUrl;
+    await user.save();
+
+    res.json({
+      message: 'Avatar uploaded successfully',
+      avatar: user.avatar,
+      user: user.getPublicProfile()
+    });
+  } catch (error) {
+    console.error('Avatar upload error:', error.message);
+
+    // Clean up uploaded file if there was an error
+    if (req.file) {
+      const filePath = req.file.path;
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
+
+    if (error.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ message: 'File too large. Maximum size is 5MB.' });
+    }
+
+    res.status(500).json({ message: 'Server error during file upload' });
   }
 });
 

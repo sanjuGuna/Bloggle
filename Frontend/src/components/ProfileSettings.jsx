@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
+import ImageCropper from './ImageCropper';
+import { api } from '../utils/api';
+import { useAuth } from '../context/AuthContext';
 import '../styles/ProfileSettings.css';
 
 const ProfileSettings = ({ currentUser, onUpdateUser }) => {
+  const { token } = useAuth();
   const [activeTab, setActiveTab] = useState('profile');
   const [userData, setUserData] = useState({
     username: currentUser?.username || '',
@@ -14,6 +18,11 @@ const ProfileSettings = ({ currentUser, onUpdateUser }) => {
     newsletter: currentUser?.newsletter || false,
     privacy: currentUser?.privacy || 'public'
   });
+
+  // Image cropper states
+  const [showCropper, setShowCropper] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -29,18 +38,86 @@ const ProfileSettings = ({ currentUser, onUpdateUser }) => {
     alert('Profile updated successfully!');
   };
 
-  const handleImageUpload = (e) => {
+  const handleImageSelect = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file.');
+        return;
+      }
+
+      // Validate file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size must be less than 5MB.');
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = (event) => {
-        setUserData(prev => ({
-          ...prev,
-          avatar: event.target.result
-        }));
+        setSelectedImage(event.target.result);
+        setShowCropper(true);
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleCropComplete = async (croppedBlob) => {
+    try {
+      setUploadingAvatar(true);
+      setShowCropper(false);
+
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append('avatar', croppedBlob, 'avatar.jpg');
+
+      // Upload to backend
+      const response = await api.post('/api/users/avatar/upload', formData, {
+        token,
+        timeout: 30000, // 30 second timeout for file upload
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      // Update local state with new avatar URL
+      setUserData(prev => ({
+        ...prev,
+        avatar: `http://localhost:5000${response.avatar}`
+      }));
+
+      // Update parent component
+      if (onUpdateUser) {
+        onUpdateUser({ ...userData, avatar: response.avatar });
+      }
+
+      alert('Profile picture updated successfully!');
+
+    } catch (error) {
+      console.error('Avatar upload error:', error);
+
+      let errorMessage = 'Failed to upload profile picture. Please try again.';
+
+      if (error.message?.includes('timed out')) {
+        errorMessage = 'Upload timed out. Please check your connection and try again.';
+      } else if (error.message?.includes('Network error')) {
+        errorMessage = 'Unable to connect to server. Please check your internet connection.';
+      } else if (error.status === 401) {
+        errorMessage = 'Your session has expired. Please login again.';
+      } else if (error.status === 400) {
+        errorMessage = error.message || 'Invalid image file.';
+      }
+
+      alert(errorMessage);
+    } finally {
+      setUploadingAvatar(false);
+      setSelectedImage(null);
+    }
+  };
+
+  const handleCropCancel = () => {
+    setShowCropper(false);
+    setSelectedImage(null);
   };
 
   return (
@@ -54,20 +131,23 @@ const ProfileSettings = ({ currentUser, onUpdateUser }) => {
         <div className="sidebar">
           <div className="user-card">
             <div className="avatar-container">
-              <img 
-                src={userData.avatar || '/default-avatar.png'} 
-                alt={userData.username} 
+              <img
+                src={userData.avatar || '/default-avatar.png'}
+                alt={userData.username}
                 className="avatar"
               />
-              <label htmlFor="avatar-upload" className="avatar-upload-label">
-                <span className="upload-icon">📷</span>
+              <label htmlFor="avatar-upload" className={`avatar-upload-label ${uploadingAvatar ? 'uploading' : ''}`}>
+                <span className="upload-icon">
+                  {uploadingAvatar ? '⏳' : '📷'}
+                </span>
               </label>
               <input
                 id="avatar-upload"
                 type="file"
                 accept="image/*"
-                onChange={handleImageUpload}
+                onChange={handleImageSelect}
                 className="avatar-upload-input"
+                disabled={uploadingAvatar}
               />
             </div>
             <h2>{userData.username}</h2>
@@ -348,6 +428,16 @@ const ProfileSettings = ({ currentUser, onUpdateUser }) => {
           )}
         </div>
       </div>
+
+      {/* Image Cropper Modal */}
+      {showCropper && selectedImage && (
+        <ImageCropper
+          image={selectedImage}
+          onCrop={handleCropComplete}
+          onCancel={handleCropCancel}
+          aspectRatio={1} // Square crop for profile pictures
+        />
+      )}
     </div>
   );
 };
