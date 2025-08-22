@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../utils/api';
-import CreateBlog from '../pages/CreateBlog';
+import CreateBlog from '../Pages/CreateBlog';
 
 const CreateBlogWrapper = () => {
   const { user, token } = useAuth();
