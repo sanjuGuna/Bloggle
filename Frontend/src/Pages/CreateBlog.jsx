@@ -29,6 +29,13 @@ const CreateBlog = ({ onCreate, currentUser }) => {
     }
   }, []);
 
+  // Restore editor content whenever we switch back to edit mode
+  useEffect(() => {
+    if (!isPreview && editorRef.current) {
+      editorRef.current.innerHTML = blogData.content || '';
+    }
+  }, [isPreview]);
+
   // Handle paste events (including images from clipboard)
   const handlePaste = (e) => {
     const items = Array.from(e.clipboardData.items);
@@ -346,6 +353,14 @@ const CreateBlog = ({ onCreate, currentUser }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Ensure we have the latest editor content before submit
+    if (editorRef.current) {
+      const content = editorRef.current.innerHTML;
+      if (content !== blogData.content) {
+        setBlogData((prev) => ({ ...prev, content }));
+      }
+    }
+
     // Validation
     if (!blogData.title.trim()) {
       alert('Please enter a title for your story');
@@ -406,7 +421,7 @@ const CreateBlog = ({ onCreate, currentUser }) => {
         <div className="header-actions">
           <button
             type="button"
-            onClick={() => setIsPreview(!isPreview)}
+            onClick={() => { handleContentChange(); setIsPreview(!isPreview); }}
             className={`preview-btn ${isPreview ? 'active' : ''}`}
           >
             {isPreview ? 'Edit' : 'Preview'}
