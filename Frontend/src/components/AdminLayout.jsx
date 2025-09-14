@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import '../styles/AdminLayout.css';
@@ -7,6 +7,7 @@ const AdminLayout = ({ children, currentPage }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: '📊', path: '/admin' },
@@ -16,6 +17,21 @@ const AdminLayout = ({ children, currentPage }) => {
     { id: 'settings', label: 'Settings', icon: '⚙️', path: '/admin/settings' }
   ];
 
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      
+      // Close sidebar when switching to desktop view
+      if (!mobile && sidebarOpen) {
+        setSidebarOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [sidebarOpen]);
+
   const handleLogout = () => {
     logout();
     navigate('/');
@@ -23,18 +39,25 @@ const AdminLayout = ({ children, currentPage }) => {
 
   const handleMenuClick = (path) => {
     navigate(path);
-    setSidebarOpen(false);
+    if (isMobile) {
+      setSidebarOpen(false);
+    }
+  };
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
   };
 
   return (
     <div className="admin-layout">
       {/* Sidebar */}
-      <div className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}>
+      <aside className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <h2>Bloggle Admin</h2>
           <button 
             className="sidebar-toggle"
-            onClick={() => setSidebarOpen(false)}
+            onClick={toggleSidebar}
+            aria-label="Close sidebar"
           >
             ×
           </button>
@@ -71,15 +94,22 @@ const AdminLayout = ({ children, currentPage }) => {
             🚪 Logout
           </button>
         </div>
-      </div>
+      </aside>
+
+      {/* Overlay for mobile */}
+      <div 
+        className={`sidebar-overlay ${sidebarOpen ? 'open' : ''}`}
+        onClick={() => setSidebarOpen(false)}
+      />
 
       {/* Main Content */}
-      <div className="admin-main">
+      <main className="admin-main">
         {/* Top Bar */}
         <header className="admin-header">
           <button 
             className="mobile-menu-btn"
-            onClick={() => setSidebarOpen(true)}
+            onClick={toggleSidebar}
+            aria-label="Open sidebar"
           >
             ☰
           </button>
@@ -97,18 +127,10 @@ const AdminLayout = ({ children, currentPage }) => {
         </header>
 
         {/* Page Content */}
-        <main className="admin-content">
+        <div className="admin-content">
           {children}
-        </main>
-      </div>
-
-      {/* Overlay for mobile */}
-      {sidebarOpen && (
-        <div 
-          className="sidebar-overlay"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+        </div>
+      </main>
     </div>
   );
 };
