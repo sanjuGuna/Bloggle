@@ -7,6 +7,7 @@ import BlogDetails from "./pages/BlogDetails";
 import CreateBlogWrapper from "./components/CreateBlogWrapper";
 import ProfileSettingsWrapper from "./components/ProfileSettingsWrapper";
 import Login from "./components/Login";
+import AdminWrapper from "./components/AdminWrapper";
 import "./App.css";
 
 function App() {
@@ -21,6 +22,10 @@ function App() {
             <Route path="/blog/:id" element={<BlogDetails />} />
             <Route path="/create" element={<CreateBlogWrapper />} />
             <Route path="/profile" element={<ProfileSettingsWrapper />} />
+            <Route path="/admin" element={<AdminWrapper currentPage="dashboard" />} />
+            <Route path="/admin/blogs" element={<AdminWrapper currentPage="blogs" />} />
+            <Route path="/admin/users" element={<AdminWrapper currentPage="users" />} />
+            <Route path="/admin/settings" element={<AdminWrapper currentPage="settings" />} />
           </Routes>
         </Layout>
         

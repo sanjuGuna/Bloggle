@@ -33,6 +33,11 @@ const Navbar = ({ onShowLogin }) => {
             <a href="/profile" className="nav-link">Profile</a>
           </li>
         )}
+        {isAuthenticated && (user?.role === 'admin' || user?.isAdmin) && (
+          <li>
+            <a href="/admin" className="nav-link admin-link">Admin</a>
+          </li>
+        )}
       </ul>
 
       <div className="nav-auth">
@@ -91,6 +96,9 @@ const Navbar = ({ onShowLogin }) => {
             </button>
             <button className="auth-btn signup-btn" onClick={handleShowLogin}>
               Sign Up
+            </button>
+            <button className="auth-btn admin-login-btn" onClick={handleShowLogin}>
+              Admin
             </button>
           </div>
         )}

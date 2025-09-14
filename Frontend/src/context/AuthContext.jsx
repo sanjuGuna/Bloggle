@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }) => {
   }, [token]);
 
   // Login function with enhanced error handling
-  const login = async (email, password) => {
+  const login = async (email, password, redirectToAdmin = false) => {
     try {
       const data = await api.post('/api/auth/login',
         { email, password },
@@ -76,6 +76,14 @@ export const AuthProvider = ({ children }) => {
       setUser(data.user);
       setToken(data.token);
       localStorage.setItem('token', data.token);
+      
+      // If admin login and user is admin, redirect to admin panel
+      if (redirectToAdmin && (data.user.role === 'admin' || data.user.isAdmin)) {
+        setTimeout(() => {
+          window.location.href = '/admin';
+        }, 100);
+      }
+      
       return { success: true, user: data.user };
     } catch (error) {
       console.error('Login error:', error);

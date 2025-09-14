@@ -6,6 +6,16 @@ require('dotenv').config();
 // Sample users data
 const users = [
   {
+    username: 'admin',
+    email: 'admin@bloggle.com',
+    password: 'admin123',
+    bio: 'Bloggle Administrator',
+    location: 'Admin HQ',
+    role: 'admin',
+    isAdmin: true,
+    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'
+  },
+  {
     username: 'ethan_siegel',
     email: 'ethan@example.com',
     password: 'password123',

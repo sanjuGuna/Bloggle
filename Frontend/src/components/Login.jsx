@@ -4,6 +4,7 @@ import '../styles/Login.css';
 
 const Login = ({ onClose }) => {
   const [isLogin, setIsLogin] = useState(true);
+  const [isAdminLogin, setIsAdminLogin] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -37,9 +38,18 @@ const Login = ({ onClose }) => {
           return;
         }
 
-        const result = await login(formData.email, formData.password);
+        const result = await login(formData.email, formData.password, isAdminLogin);
         if (result.success) {
-          onClose();
+          if (isAdminLogin) {
+            // Admin login will redirect automatically if user is admin
+            // If not admin, show error
+            if (!result.user || (result.user.role !== 'admin' && !result.user.isAdmin)) {
+              setError('Access denied. Admin privileges required.');
+              return;
+            }
+          } else {
+            onClose();
+          }
         } else {
           setError(result.message);
         }
@@ -79,6 +89,7 @@ const Login = ({ onClose }) => {
 
   const toggleMode = () => {
     setIsLogin(!isLogin);
+    setIsAdminLogin(false);
     setFormData({
       username: '',
       email: '',
@@ -88,14 +99,26 @@ const Login = ({ onClose }) => {
     setError('');
   };
 
+  const handleAdminLogin = () => {
+    setIsAdminLogin(true);
+    setError('');
+  };
+
   return (
     <div className="login-overlay" onClick={onClose}>
       <div className="login-modal" onClick={(e) => e.stopPropagation()}>
         <button className="close-btn" onClick={onClose}>×</button>
         
         <div className="login-header">
-          <h2>{isLogin ? 'Welcome Back' : 'Join Bloggle'}</h2>
-          <p>{isLogin ? 'Sign in to continue your journey' : 'Create your account to start writing'}</p>
+          <h2>
+            {isAdminLogin ? 'Admin Login' : (isLogin ? 'Welcome Back' : 'Join Bloggle')}
+          </h2>
+          <p>
+            {isAdminLogin 
+              ? 'Sign in to access the admin panel' 
+              : (isLogin ? 'Sign in to continue your journey' : 'Create your account to start writing')
+            }
+          </p>
         </div>
 
         {error && (
@@ -192,6 +215,33 @@ const Login = ({ onClose }) => {
           <div className="forgot-password">
             <button type="button" className="forgot-btn">
               Forgot your password?
+            </button>
+          </div>
+        )}
+
+        {isLogin && !isAdminLogin && (
+          <div className="admin-login">
+            <button 
+              type="button" 
+              className="admin-login-btn"
+              onClick={handleAdminLogin}
+            >
+              🔐 Admin Login
+            </button>
+          </div>
+        )}
+
+        {isAdminLogin && (
+          <div className="admin-login">
+            <button 
+              type="button" 
+              className="back-to-normal-btn"
+              onClick={() => {
+                setIsAdminLogin(false);
+                setError('');
+              }}
+            >
+              ← Back to Regular Login
             </button>
           </div>
         )}

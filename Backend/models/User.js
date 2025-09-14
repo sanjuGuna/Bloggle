@@ -68,6 +68,15 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  status: {
+    type: String,
+    enum: ['active', 'suspended', 'banned'],
+    default: 'active'
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false
+  },
   followers: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
