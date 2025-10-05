@@ -12,7 +12,7 @@ const BlogDetails = () => {
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [images, setImages] = useState([]);
+  // const [images, setImages] = useState([]);
   const [likeLoading, setLikeLoading] = useState(false);
 
   // Fetch blog data on component mount
@@ -47,11 +47,11 @@ const BlogDetails = () => {
     }
   }, [id]);
 
-  const handleImageUpload = (e) => {
-    const files = Array.from(e.target.files);
-    const imageUrls = files.map((file) => URL.createObjectURL(file));
-    setImages((prev) => [...prev, ...imageUrls]);
-  };
+  // const handleImageUpload = (e) => {
+  //   const files = Array.from(e.target.files);
+  //   const imageUrls = files.map((file) => URL.createObjectURL(file));
+  //   setImages((prev) => [...prev, ...imageUrls]);
+  // };
 
   const handleLike = async () => {
     if (!token) {
@@ -178,16 +178,7 @@ return (
         <span className="comments-count">💬 {blog.commentCount || 0} comments</span>
       </div>
 
-      <div className="image-upload-section">
-        <h3>Add Related Images</h3>
-        <input type="file" accept="image/*" multiple onChange={handleImageUpload} />
-
-        <div className="image-gallery">
-          {images.map((src, index) => (
-            <img key={index} src={src} alt={`Uploaded ${index}`} />
-          ))}
-        </div>
-      </div>
+      
     </div>
   );
 };
