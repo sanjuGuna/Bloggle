@@ -8,32 +8,46 @@ dotenv.config();
 
 const app = express();
 
-//    https://bloggle-7j9v.vercel.app/
+// ✅ Dynamic CORS setup
+const allowedOrigins = [
+  process.env.FRONTEND_URL,                // e.g. https://bloggle-7j9v.vercel.app
+  'https://bloggle-7j9v.vercel.app'
+].filter(Boolean);
+
 app.use(cors({
-  origin: ['https://bloggle-7j9v.vercel.app'],
-  credentials: true
+  origin(origin, cb) {
+    // allow non-browser requests (no origin) and allowed origins
+    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+    return cb(new Error('Not allowed by CORS'));
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'x-auth-token', 'Authorization'],
+  credentials: false // set true only if you actually use cookies
 }));
+
+// Handle preflight requests
+app.options('*', cors());
+
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files from uploads directory
+// Serve static files (uploads)
 app.use('/uploads', express.static('uploads'));
 
-// MongoDB Connection
+// MongoDB connection
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/bloggle', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    const conn = await mongoose.connect(
+      process.env.MONGODB_URI || 'mongodb+srv://myAtlasDBUser:sanjay1210@myatlasclusteredu.w2msv.mongodb.net/test',
+      { useNewUrlParser: true, useUnifiedTopology: true }
+    );
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error('Error connecting to MongoDB:', error.message);
     process.exit(1);
   }
 };
-
-// Connect to MongoDB
 connectDB();
 
 // Routes
@@ -58,8 +72,6 @@ app.use('*', (req, res) => {
   res.status(404).json({ message: 'Route not found' });
 });
 
+// Server listen
 const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
