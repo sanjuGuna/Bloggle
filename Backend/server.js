@@ -1,3 +1,5 @@
+// backend/server.js
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -8,25 +10,29 @@ dotenv.config();
 
 const app = express();
 
-// ✅ Dynamic CORS setup
+// ✅ CORS setup
 const allowedOrigins = [
-  process.env.FRONTEND_URL,                // e.g. https://bloggle-7j9v.vercel.app
-  'https://bloggle-7j9v.vercel.app'
+  process.env.FRONTEND_URL,                // e.g., https://bloggle-7j9v.vercel.app
+  'https://bloggle-7j9v.vercel.app',
+  'http://localhost:5173'
 ].filter(Boolean);
 
-app.use(cors({
-  origin(origin, cb) {
-    // allow non-browser requests (no origin) and allowed origins
-    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-    return cb(new Error('Not allowed by CORS'));
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.error('❌ Blocked by CORS:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
   },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'x-auth-token', 'Authorization'],
-  credentials: false // set true only if you actually use cookies
-}));
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token'],
+  credentials: false
+};
 
-// Handle preflight requests
-app.options('*', cors());
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 // Middleware
 app.use(express.json());
@@ -35,20 +41,24 @@ app.use(express.urlencoded({ extended: true }));
 // Serve static files (uploads)
 app.use('/uploads', express.static('uploads'));
 
-// MongoDB connection
+// ✅ MongoDB connection
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(
+    await mongoose.connect(
       process.env.MONGODB_URI || 'mongodb+srv://myAtlasDBUser:sanjay1210@myatlasclusteredu.w2msv.mongodb.net/test',
       { useNewUrlParser: true, useUnifiedTopology: true }
     );
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    console.log('✅ MongoDB Connected');
   } catch (error) {
-    console.error('Error connecting to MongoDB:', error.message);
+    console.error('❌ MongoDB connection error:', error.message);
     process.exit(1);
   }
 };
 connectDB();
+
+// Optional: log MongoDB connection events
+mongoose.connection.on('connected', () => console.log('✅ MongoDB connected successfully'));
+mongoose.connection.on('error', (err) => console.error('❌ MongoDB error:', err));
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
@@ -72,6 +82,9 @@ app.use('*', (req, res) => {
   res.status(404).json({ message: 'Route not found' });
 });
 
-// Server listen
+// Server listen (for local dev; Render/Vercel uses process.env.PORT)
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+// Export app for serverless platforms like Vercel
+module.exports = app;
