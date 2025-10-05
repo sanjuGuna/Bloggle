@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-import Home from "./pages/Home";
+import Home from "./Pages/Home";
 import Layout from "./components/Layout";
-import BlogDetails from "./pages/BlogDetails";
+import BlogDetails from "./Pages/BlogDetails";
 import CreateBlogWrapper from "./components/CreateBlogWrapper";
 import ProfileSettingsWrapper from "./components/ProfileSettingsWrapper";
 import Login from "./components/Login";
