@@ -8,8 +8,11 @@ dotenv.config();
 
 const app = express();
 
-// Middleware
-app.use(cors());
+//    https://bloggle-7j9v.vercel.app/
+app.use(cors({
+  origin: ['https://bloggle-7j9v.vercel.app'],
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
