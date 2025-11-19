@@ -12,11 +12,10 @@ const app = express();
 
 // ✅ CORS setup
 const allowedOrigins = [
-  process.env.FRONTEND_URL,                // e.g., https://bloggle-7j9v.vercel.app
-  'https://bloggle-7j9v.vercel.app',
+  process.env.FRONTEND_URL,
+  'https://bloggle-7j9v-6wzcrndlw-sanjaygs-projects-9bd0934b.vercel.app', // ✅ exact Vercel frontend URL
   'http://localhost:5173'
 ].filter(Boolean);
-
 const corsOptions = {
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {

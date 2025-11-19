@@ -1,15 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { api } from '../utils/api';
 import CreateBlog from '../Pages/CreateBlog';
 
 const CreateBlogWrapper = () => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [initialBlog, setInitialBlog] = useState(null);
+  const [loadingEdit, setLoadingEdit] = useState(false);
+  const [editError, setEditError] = useState(null);
 
-  const handleCreateBlog = async (blogData) => {
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const edit = params.get('edit');
+
+    if (edit) {
+      setEditingId(edit);
+    } else {
+      setEditingId(null);
+      setInitialBlog(null);
+      setEditError(null);
+    }
+  }, [location.search]);
+
+  useEffect(() => {
+    const fetchBlogForEdit = async () => {
+      if (!editingId || !token) return;
+
+      try {
+        setLoadingEdit(true);
+        setEditError(null);
+        const blog = await api.get(`/api/blogs/${editingId}/edit`, { token });
+        setInitialBlog(blog);
+      } catch (error) {
+        console.error('Error loading blog for edit:', error);
+        setEditError(error.message || 'Failed to load blog for editing.');
+      } finally {
+        setLoadingEdit(false);
+      }
+    };
+
+    fetchBlogForEdit();
+  }, [editingId, token]);
+
+  const handleSaveBlog = async (blogData) => {
     if (!token) {
       alert('Please login to create a blog post.');
       return;
@@ -17,7 +55,7 @@ const CreateBlogWrapper = () => {
 
     try {
       setIsSubmitting(true);
-      console.log('Creating blog:', blogData);
+      console.log(editingId ? 'Updating blog:' : 'Creating blog:', blogData);
 
       // Prepare blog data for API
       const blogPayload = {
@@ -29,23 +67,32 @@ const CreateBlogWrapper = () => {
         status: blogData.status || 'draft'
       };
 
-      const createdBlog = await api.post('/api/blogs', blogPayload, {
-        token,
-        timeout: 15000, // 15 second timeout for blog creation
-        retries: 1
-      });
+      let savedBlog;
+      if (editingId) {
+        savedBlog = await api.put(`/api/blogs/${editingId}`, blogPayload, {
+          token,
+          timeout: 15000,
+          retries: 1
+        });
+      } else {
+        savedBlog = await api.post('/api/blogs', blogPayload, {
+          token,
+          timeout: 15000, // 15 second timeout for blog creation
+          retries: 1
+        });
+      }
 
       // Show success message
       const message = blogData.status === 'published'
-        ? 'Blog published successfully!'
-        : 'Blog saved as draft!';
+        ? (editingId ? 'Blog updated and published!' : 'Blog published successfully!')
+        : (editingId ? 'Draft updated successfully!' : 'Blog saved as draft!');
       alert(message);
 
-      // Navigate to the created blog or home
+      // Navigate to the blog or My Blogs
       if (blogData.status === 'published') {
-        navigate(`/blog/${createdBlog._id}`);
+        navigate(`/blog/${savedBlog._id}`);
       } else {
-        navigate('/');
+        navigate('/my-blogs');
       }
 
     } catch (error) {
@@ -97,7 +144,8 @@ const CreateBlogWrapper = () => {
   return (
     <CreateBlog
       currentUser={user}
-      onCreate={handleCreateBlog}
+      onCreate={handleSaveBlog}
+      initialBlog={initialBlog}
       isSubmitting={isSubmitting}
     />
   );

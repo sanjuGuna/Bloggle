@@ -1,18 +1,31 @@
 import React, { useState, useRef, useEffect } from 'react';
 import '../styles/CreateBlog.css';
 
-const CreateBlog = ({ onCreate, currentUser, isSubmitting = false }) => {
-  const [blogData, setBlogData] = useState({
-    publication: "",
-    title: "",
-    excerpt: "",
-    content: "",
-    tags: [],
-    status: "draft",
-    readTime: "5 min read",
-    likes: 0,
-    comments: 0
-  });
+const CreateBlog = ({ onCreate, currentUser, isSubmitting = false, initialBlog = null }) => {
+  const [blogData, setBlogData] = useState(() =>
+    initialBlog ? {
+      publication: initialBlog.publication || "",
+      title: initialBlog.title || "",
+      excerpt: initialBlog.excerpt || "",
+      content: initialBlog.content || "",
+      tags: initialBlog.tags || [],
+      status: initialBlog.status || "draft",
+      readTime: initialBlog.readTime || "5 min read",
+      likes: 0,
+      comments: 0
+    } : {
+      publication: "",
+      title: "",
+      excerpt: "",
+      content: "",
+      tags: [],
+      status: "draft",
+      readTime: "5 min read",
+      likes: 0,
+      comments: 0
+    }
+  );
+
   const [newTag, setNewTag] = useState("");
   const [isPreview, setIsPreview] = useState(false);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
@@ -29,12 +42,32 @@ const CreateBlog = ({ onCreate, currentUser, isSubmitting = false }) => {
     }
   }, []);
 
+  // Update state when initialBlog changes (for edit mode)
+  useEffect(() => {
+    if (initialBlog) {
+      setBlogData(prev => ({
+        ...prev,
+        publication: initialBlog.publication || "",
+        title: initialBlog.title || "",
+        excerpt: initialBlog.excerpt || "",
+        content: initialBlog.content || "",
+        tags: initialBlog.tags || [],
+        status: initialBlog.status || "draft",
+        readTime: initialBlog.readTime || prev.readTime || "5 min read",
+      }));
+
+      if (editorRef.current && !isPreview) {
+        editorRef.current.innerHTML = initialBlog.content || '';
+      }
+    }
+  }, [initialBlog, isPreview]);
+
   // Restore editor content whenever we switch back to edit mode
   useEffect(() => {
     if (!isPreview && editorRef.current) {
       editorRef.current.innerHTML = blogData.content || '';
     }
-  }, [isPreview]);
+  }, [isPreview, blogData.content]);
 
   // Handle paste events (including images from clipboard)
   const handlePaste = (e) => {

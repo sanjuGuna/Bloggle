@@ -1,7 +1,7 @@
 const DEFAULT_TIMEOUT_MS = 10000; // 10s
 const DEFAULT_RETRIES = 1;
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'https://bloggle-86m8.onrender.com';
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 function timeoutPromise(ms) {
   return new Promise((_, reject) => {

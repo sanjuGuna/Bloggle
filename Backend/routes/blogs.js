@@ -66,6 +66,107 @@ router.get('/', async (req, res) => {
   }
 });
 
+// @route   GET /api/blogs/user/:userId
+// @desc    Get blogs by specific user (published only)
+// @access  Public
+router.get('/user/:userId', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    
+    const blogs = await Blog.find({ 
+      author: req.params.userId, 
+      status: 'published' 
+    })
+      .populate('author', 'username avatar')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .select('-content');
+    
+    const total = await Blog.countDocuments({ 
+      author: req.params.userId, 
+      status: 'published' 
+    });
+    
+    res.json({
+      blogs,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+        totalBlogs: total
+      }
+    });
+  } catch (error) {
+    console.error('Get user blogs error:', error.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   GET /api/blogs/me
+// @desc    Get blogs of the authenticated user (all statuses)
+// @access  Private
+router.get('/me', auth, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const query = { author: req.user.id };
+    if (req.query.status) {
+      query.status = req.query.status;
+    }
+
+    const blogs = await Blog.find(query)
+      .populate('author', 'username avatar')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .select('-content');
+
+    const total = await Blog.countDocuments(query);
+
+    res.json({
+      blogs,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+        totalBlogs: total
+      }
+    });
+  } catch (error) {
+    console.error('Get my blogs error:', error.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   GET /api/blogs/:id/edit
+// @desc    Get full blog for editing (author only)
+// @access  Private
+router.get('/:id/edit', auth, async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id)
+      .populate('author', 'username avatar');
+
+    if (!blog) {
+      return res.status(404).json({ message: 'Blog not found' });
+    }
+
+    if (blog.author._id.toString() !== req.user.id) {
+      return res.status(401).json({ message: 'Not authorized' });
+    }
+
+    res.json(blog);
+  } catch (error) {
+    console.error('Get blog for edit error:', error.message);
+    if (error.kind === 'ObjectId') {
+      return res.status(404).json({ message: 'Blog not found' });
+    }
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // @route   GET /api/blogs/:id
 // @desc    Get blog by ID
 // @access  Public
@@ -300,42 +401,6 @@ router.post('/:id/comment', [
   }
 });
 
-// @route   GET /api/blogs/user/:userId
-// @desc    Get blogs by specific user
-// @access  Public
-router.get('/user/:userId', async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
-    
-    const blogs = await Blog.find({ 
-      author: req.params.userId, 
-      status: 'published' 
-    })
-      .populate('author', 'username avatar')
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .select('-content');
-    
-    const total = await Blog.countDocuments({ 
-      author: req.params.userId, 
-      status: 'published' 
-    });
-    
-    res.json({
-      blogs,
-      pagination: {
-        currentPage: page,
-        totalPages: Math.ceil(total / limit),
-        totalBlogs: total
-      }
-    });
-  } catch (error) {
-    console.error('Get user blogs error:', error.message);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
+ 
 
 module.exports = router;
