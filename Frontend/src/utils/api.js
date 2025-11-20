@@ -71,6 +71,8 @@ export const api = {
   get: (path, opts) => request(path, { method: 'GET', ...opts }),
   post: (path, body, opts) => request(path, { method: 'POST', body, ...opts }),
   put: (path, body, opts) => request(path, { method: 'PUT', body, ...opts }),
+  patch: (path, body, opts) => request(path, { method: 'PATCH', body, ...opts }),
+  delete: (path, opts) => request(path, { method: 'DELETE', ...opts }),
   del: (path, opts) => request(path, { method: 'DELETE', ...opts }),
   BASE_URL,
 };

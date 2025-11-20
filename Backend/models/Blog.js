@@ -111,12 +111,12 @@ const blogSchema = new mongoose.Schema({
 
 // Virtual for like count
 blogSchema.virtual('likeCount').get(function() {
-  return this.likes.length;
+  return Array.isArray(this.likes) ? this.likes.length : 0;
 });
 
 // Virtual for comment count
 blogSchema.virtual('commentCount').get(function() {
-  return this.comments.length;
+  return Array.isArray(this.comments) ? this.comments.length : 0;
 });
 
 // Virtual for reading time calculation

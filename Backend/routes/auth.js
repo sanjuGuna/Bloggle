@@ -53,7 +53,8 @@ router.post('/register', [
       user: {
         id: user.id,
         username: user.username,
-        role: user.role
+        role: user.role,
+        isAdmin: user.isAdmin
       }
     };
 
@@ -71,7 +72,8 @@ router.post('/register', [
             email: user.email,
             bio: user.bio,
             avatar: user.avatar,
-            role: user.role
+            role: user.role,
+            isAdmin: user.isAdmin
           }
         });
       }
@@ -119,7 +121,8 @@ router.post('/login', [
       user: {
         id: user.id,
         username: user.username,
-        role: user.role
+        role: user.role,
+        isAdmin: user.isAdmin
       }
     };
 
@@ -137,7 +140,8 @@ router.post('/login', [
             email: user.email,
             bio: user.bio,
             avatar: user.avatar,
-            role: user.role
+            role: user.role,
+            isAdmin: user.isAdmin
           }
         });
       }
