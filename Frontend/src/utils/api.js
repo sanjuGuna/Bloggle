@@ -1,7 +1,20 @@
 const DEFAULT_TIMEOUT_MS = 10000; // 10s
 const DEFAULT_RETRIES = 1;
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+function getBaseUrl() {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    if (host === 'localhost' || host === '127.0.0.1') {
+      return 'http://localhost:5000';
+    }
+  }
+  return 'https://bloggle-86m8.onrender.com';
+}
+
+const BASE_URL = getBaseUrl();
 
 function timeoutPromise(ms) {
   return new Promise((_, reject) => {
