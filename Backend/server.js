@@ -13,7 +13,8 @@ const app = express();
 // ✅ CORS setup
 const allowedOrigins = [
   process.env.FRONTEND_URL,
-  'https://bloggle-7j9v-6wzcrndlw-sanjaygs-projects-9bd0934b.vercel.app', // ✅ exact Vercel frontend URL
+  'https://bloggle-7j9v-6wzcrndlw-sanjaygs-projects-9bd0934b.vercel.app', // ✅ old Vercel frontend URL
+  'https://bloggle-7j9v.vercel.app', // ✅ new Vercel frontend URL
   'http://localhost:5173'
 ].filter(Boolean);
 const corsOptions = {
